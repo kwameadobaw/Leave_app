@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Security Dashboard - Leave Management System{% endblock %}
+
+{% block page_title %}Security Dashboard{% endblock %}
+
+{% block content %}
+<!-- Approved Leave Requests -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Approved Leave Requests</h6>
+    </div>
+    <div class="card-body">
+        {% if approved_requests %}
+            <div class="table-responsive">
+                <table class="table table-hover" id="approvedTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Department</th>
+                            <th>Type</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Approval Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in approved_requests %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if request.employee.profile_picture %}
+                                            <img src="{{ request.employee.profile_picture.url }}" class="rounded-circle me-2" width="30" height="30" alt="Profile">
+                                        {% else %}
+                                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px;">
+                                                <span class="text-white">{{ request.employee.first_name|first }}{{ request.employee.last_name|first }}</span>
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <div>{{ request.employee.get_full_name }}</div>
+                                            <small class="text-muted">{{ request.employee.employee_id }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ request.employee.department }}</td>
+                                <td>{{ request.get_leave_type_display }}</td>
+                                <td>{{ request.start_date|date:"M d, Y" }}</td>
+                                <td>{{ request.end_date|date:"M d, Y" }}</td>
+                                <td>{{ request.review_date|date:"M d, Y" }}</td>
+                                <td>
+                                    <a href="{% url 'log_employee_action' request.id %}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-clipboard-check me-1"></i> Log Action
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-clipboard-list fa-4x text-gray-300 mb-3"></i>
+                <p class="mb-0">No approved leave requests to display.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Recent Security Logs -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Recent Security Logs</h6>
+    </div>
+    <div class="card-body">
+        {% if recent_logs %}
+            <div class="table-responsive">
+                <table class="table table-hover" id="logsTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Action</th>
+                            <th>Timestamp</th>
+                            <th>Security Officer</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in recent_logs %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if log.employee.profile_picture %}
+                                            <img src="{{ log.employee.profile_picture.url }}" class="rounded-circle me-2" width="30" height="30" alt="Profile">
+                                        {% else %}
+                                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px;">
+                                                <span class="text-white">{{ log.employee.first_name|first }}{{ log.employee.last_name|first }}</span>
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <div>{{ log.employee.get_full_name }}</div>
+                                            <small class="text-muted">{{ log.employee.employee_id }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if log.action == 'entry' %}
+                                        <span class="badge bg-success">Entry</span>
+                                    {% elif log.action == 'exit' %}
+                                        <span class="badge bg-primary">Exit</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Access Denied</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ log.timestamp|date:"M d, Y H:i" }}</td>
+                                <td>{{ log.security_officer.get_full_name }}</td>
+                                <td>{{ log.notes|default:"-" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-history fa-4x text-gray-300 mb-3"></i>
+                <p class="mb-0">No recent security logs to display.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add any additional JavaScript for the security dashboard here
+</script>
+{% endblock %}

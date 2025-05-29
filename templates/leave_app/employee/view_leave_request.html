@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}Leave Request Details - Leave Management System{% endblock %}
+
+{% block page_title %}Leave Request Details{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">Leave Request #{{ leave_request.id }}</h6>
+                <span class="status-badge {% if leave_request.status == 'pending' %}status-pending{% elif leave_request.status == 'approved' %}status-approved{% else %}status-rejected{% endif %}">
+                    {{ leave_request.get_status_display }}
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5 class="text-primary mb-3">Request Information</h5>
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="40%">Leave Type:</th>
+                                <td>{{ leave_request.get_leave_type_display }}</td>
+                            </tr>
+                            <tr>
+                                <th>Start Date:</th>
+                                <td>{{ leave_request.start_date }}</td>
+                            </tr>
+                            <tr>
+                                <th>End Date:</th>
+                                <td>{{ leave_request.end_date }}</td>
+                            </tr>
+                            <tr>
+                                <th>Duration:</th>
+                                <td>{{ leave_request.duration }} day(s)</td>
+                            </tr>
+                            <tr>
+                                <th>Submitted On:</th>
+                                <td>{{ leave_request.created_at|date:"M d, Y H:i" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-primary mb-3">Status Information</h5>
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="40%">Status:</th>
+                                <td>
+                                    {% if leave_request.status == 'pending' %}
+                                        <span class="text-warning">Pending</span>
+                                    {% elif leave_request.status == 'approved' %}
+                                        <span class="text-success">Approved</span>
+                                    {% else %}
+                                        <span class="text-danger">Rejected</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% if leave_request.reviewed_by %}
+                                <tr>
+                                    <th>Reviewed By:</th>
+                                    <td>{{ leave_request.reviewed_by.get_full_name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Review Date:</th>
+                                    <td>{{ leave_request.review_date|date:"M d, Y H:i" }}</td>
+                                </tr>
+                            {% endif %}
+                            {% if leave_request.status != 'pending' %}
+                                <tr>
+                                    <th>Comments:</th>
+                                    <td>{{ leave_request.review_comment|default:"No comments provided." }}</td>
+                                </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h5 class="text-primary mb-3">Reason for Leave</h5>
+                    <div class="p-3 bg-light rounded">
+                        {{ leave_request.reason|linebreaks }}
+                    </div>
+                </div>
+                
+                {% if leave_request.status == 'approved' %}
+                    <div class="alert alert-success" role="alert">
+                        <h5 class="alert-heading"><i class="fas fa-check-circle me-2"></i> Your leave request has been approved!</h5>
+                        <p>Please show this approval to security when leaving the premises.</p>
+                        <hr>
+                        <p class="mb-0">Approval ID: <strong>LR-{{ leave_request.id }}-{{ leave_request.employee.employee_id }}</strong></p>
+                    </div>
+                {% elif leave_request.status == 'rejected' %}
+                    <div class="alert alert-danger" role="alert">
+                        <h5 class="alert-heading"><i class="fas fa-times-circle me-2"></i> Your leave request has been rejected.</h5>
+                        <p>Please review the manager's comments for more information.</p>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning" role="alert">
+                        <h5 class="alert-heading"><i class="fas fa-clock me-2"></i> Your leave request is pending approval.</h5>
+                        <p>You will be notified once a manager reviews your request.</p>
+                    </div>
+                {% endif %}
+                
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'employee_dashboard' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+                    </a>
+                    {% if leave_request.status == 'approved' %}
+                        <button class="btn btn-success" onclick="window.print()">
+                            <i class="fas fa-print me-2"></i> Print Approval
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

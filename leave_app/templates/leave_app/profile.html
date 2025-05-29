@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card profile-card animate__animated animate__fadeInUp">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-user-circle me-2"></i>User Profile</h4>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} animate__animated animate__bounceIn">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-4 text-center">
+                            <div class="profile-image-container mb-3">
+                                {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="img-fluid rounded-circle profile-image">
+                                {% else %}
+                                <div class="default-profile-image">
+                                    <i class="fas fa-user-circle fa-6x text-primary"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="user-info">
+                                <h5 class="mb-1">{{ user.get_full_name|default:user.username }}</h5>
+                                <p class="text-muted mb-1">{{ user.email }}</p>
+                                <span class="badge bg-info">{{ user.user_type|title }}</span>
+                                <p class="mt-2"><i class="fas fa-building me-1"></i> {{ user.department }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <form method="post" enctype="multipart/form-data" id="profile-form">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="{{ form.first_name.id_for_label }}" class="form-label"><i class="fas fa-user me-1"></i> First Name</label>
+                                    {{ form.first_name }}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="{{ form.last_name.id_for_label }}" class="form-label"><i class="fas fa-user me-1"></i> Last Name</label>
+                                    {{ form.last_name }}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label"><i class="fas fa-envelope me-1"></i> Email</label>
+                                    {{ form.email }}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="{{ form.department.id_for_label }}" class="form-label"><i class="fas fa-building me-1"></i> Department</label>
+                                    {{ form.department }}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="{{ form.profile_picture.id_for_label }}" class="form-label"><i class="fas fa-image me-1"></i> Profile Picture</label>
+                                    {{ form.profile_picture }}
+                                </div>
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a href="javascript:history.back()" class="btn btn-secondary me-md-2">
+                                        <i class="fas fa-arrow-left me-1"></i> Back
+                                    </a>
+                                    <button type="submit" class="btn btn-primary" id="update-profile-btn">
+                                        <i class="fas fa-save me-1"></i> Update Profile
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Add animation to form fields on focus
+        $('.form-control').focus(function() {
+            $(this).addClass('animate__animated animate__pulse');
+        }).blur(function() {
+            $(this).removeClass('animate__animated animate__pulse');
+        });
+        
+        // Show loading spinner when form is submitted
+        $('#profile-form').submit(function() {
+            $('#update-profile-btn').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Updating...');
+            $('#update-profile-btn').prop('disabled', true);
+        });
+        
+        // Preview image before upload
+        $('#{{ form.profile_picture.id_for_label }}').change(function() {
+            if (this.files && this.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('.profile-image').attr('src', e.target.result);
+                    $('.default-profile-image').hide();
+                    $('.profile-image').show();
+                }
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    });
+</script>
+{% endblock %}

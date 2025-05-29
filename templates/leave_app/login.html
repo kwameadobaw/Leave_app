@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Leave Management System{% endblock %}
+
+{% block auth_content %}
+<div class="login-page">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card login-card rounded-lg">
+                    <div class="row g-0">
+                        <div class="col-lg-5 d-none d-lg-block login-sidebar">
+                            <div class="h-100 d-flex flex-column justify-content-center">
+                                <h2 class="text-center mb-4">Leave Management System</h2>
+                                <p class="lead text-center">Welcome back! Please login to access your dashboard.</p>
+                                <div class="text-center mt-4">
+                                    <i class="fas fa-calendar-check fa-5x"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="p-5">
+                                <div class="text-center mb-4">
+                                    <h4 class="text-primary mb-2 animate__animated animate__fadeIn">Welcome Back!</h4>
+                                    <p class="text-muted animate__animated animate__fadeIn" style="animation-delay: 0.2s">Enter your credentials to login</p>
+                                </div>
+                                
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                            {{ message }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                                
+                                <form method="post" class="user">
+                                    {% csrf_token %}
+                                    <div class="form-group mb-4">
+                                        {{ form.username.label_tag }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-end-0">
+                                                <i class="fas fa-user text-primary"></i>
+                                            </span>
+                                            {{ form.username }}
+                                        </div>
+                                    </div>
+                                    <div class="form-group mb-4">
+                                        {{ form.password.label_tag }}
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light border-end-0">
+                                                <i class="fas fa-lock text-primary"></i>
+                                            </span>
+                                            {{ form.password }}
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100 py-2 shadow-sm animate__animated animate__fadeIn"><i class="fas fa-sign-in-alt me-2"></i>Login</button>
+                                </form>
+                                <hr>
+                                <div class="text-center mb-4">
+                                    <p class="mb-2">Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+                                </div>
+                                
+                                <div class="quick-login mb-3">
+                                    <p class="text-center text-muted mb-3 animate__animated animate__fadeIn">Quick access options</p>
+                                    <div class="d-flex justify-content-between gap-2">
+                                        <button type="button" class="btn btn-outline-success flex-grow-1 shadow-sm animate__animated animate__fadeInUp" onclick="quickLogin('manager')">
+                                            <i class="fas fa-user-tie me-2"></i>Manager
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger flex-grow-1 shadow-sm animate__animated animate__fadeInUp" style="animation-delay: 0.1s" onclick="quickLogin('admin')">
+                                            <i class="fas fa-user-shield me-2"></i>Admin
+                                        </button>
+                                        <button type="button" class="btn btn-outline-info flex-grow-1 shadow-sm animate__animated animate__fadeInUp" style="animation-delay: 0.2s" onclick="quickLogin('security')">
+                                            <i class="fas fa-user-lock me-2"></i>Security
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .login-card {
+        animation: fadeInUp 0.8s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .quick-login button {
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        transition: all 0.4s ease;
+    }
+    
+    .quick-login button:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: all 0.6s ease;
+        z-index: -1;
+    }
+    
+    .quick-login button:hover:after {
+        left: 100%;
+    }
+    
+    .btn-outline-success:hover i, .btn-outline-danger:hover i, .btn-outline-info:hover i {
+        animation: bounce 0.5s;
+    }
+    
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+    
+    .form-control {
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        transform: translateY(-2px);
+    }
+    
+    .input-group-text i {
+        transition: all 0.3s ease;
+    }
+    
+    .input-group:focus-within .input-group-text i {
+        color: var(--primary-color);
+        transform: scale(1.2);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function quickLogin(username) {
+        document.getElementById('id_username').value = username;
+        document.getElementById('id_password').focus();
+        
+        // Add animation to the password field
+        const passwordField = document.getElementById('id_password');
+        passwordField.classList.add('animate__animated', 'animate__pulse');
+        
+        // Remove animation classes after animation completes
+        setTimeout(() => {
+            passwordField.classList.remove('animate__animated', 'animate__pulse');
+        }, 1000);
+    }
+    
+    // Add animation to form submission
+    document.querySelector('form.user').addEventListener('submit', function(e) {
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Logging in...';
+    });
+    
+    // Add animation to alerts
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            alert.classList.add('animate__animated', 'animate__fadeIn');
+        });
+    });
+</script>
+{% endblock %}

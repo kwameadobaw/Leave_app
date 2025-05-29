@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}Manager Dashboard - Leave Management System{% endblock %}
+
+{% block page_title %}Manager Dashboard{% endblock %}
+
+{% block content %}
+<!-- Dashboard Stats -->
+<div class="row mb-4">
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-warning h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending Requests</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pending Requests -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Pending Leave Requests</h6>
+    </div>
+    <div class="card-body">
+        {% if pending_requests %}
+            <div class="table-responsive">
+                <table class="table table-hover" id="pendingTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Department</th>
+                            <th>Type</th>
+                            <th>Duration</th>
+                            <th>Dates</th>
+                            <th>Submitted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in pending_requests %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if request.employee.profile_picture %}
+                                            <img src="{{ request.employee.profile_picture.url }}" class="rounded-circle me-2" width="30" height="30" alt="Profile">
+                                        {% else %}
+                                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px;">
+                                                <span class="text-white">{{ request.employee.first_name|first }}{{ request.employee.last_name|first }}</span>
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <div>{{ request.employee.get_full_name }}</div>
+                                            <small class="text-muted">{{ request.employee.employee_id }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ request.employee.department }}</td>
+                                <td>{{ request.get_leave_type_display }}</td>
+                                <td>{{ request.duration }} day(s)</td>
+                                <td>{{ request.start_date|date:"M d" }} - {{ request.end_date|date:"M d, Y" }}</td>
+                                <td>{{ request.created_at|date:"M d, Y" }}</td>
+                                <td>
+                                    <a href="{% url 'review_leave_request' request.id %}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-check-circle me-1"></i> Review
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-check-circle fa-4x text-gray-300 mb-3"></i>
+                <p class="mb-0">No pending leave requests to review.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Recently Reviewed Requests -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Recently Reviewed Requests</h6>
+    </div>
+    <div class="card-body">
+        {% if recent_reviewed %}
+            <div class="table-responsive">
+                <table class="table table-hover" id="reviewedTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Type</th>
+                            <th>Duration</th>
+                            <th>Dates</th>
+                            <th>Status</th>
+                            <th>Reviewed On</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in recent_reviewed %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if request.employee.profile_picture %}
+                                            <img src="{{ request.employee.profile_picture.url }}" class="rounded-circle me-2" width="30" height="30" alt="Profile">
+                                        {% else %}
+                                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px;">
+                                                <span class="text-white">{{ request.employee.first_name|first }}{{ request.employee.last_name|first }}</span>
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <div>{{ request.employee.get_full_name }}</div>
+                                            <small class="text-muted">{{ request.employee.employee_id }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ request.get_leave_type_display }}</td>
+                                <td>{{ request.duration }} day(s)</td>
+                                <td>{{ request.start_date|date:"M d" }} - {{ request.end_date|date:"M d, Y" }}</td>
+                                <td>
+                                    {% if request.status == 'approved' %}
+                                        <span class="status-badge status-approved">Approved</span>
+                                    {% else %}
+                                        <span class="status-badge status-rejected">Rejected</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ request.review_date|date:"M d, Y" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-history fa-4x text-gray-300 mb-3"></i>
+                <p class="mb-0">No recently reviewed requests.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add any additional JavaScript for the manager dashboard here
+</script>
+{% endblock %}

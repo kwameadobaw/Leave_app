@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}New Leave Request - Leave Management System{% endblock %}
+
+{% block page_title %}Submit New Leave Request{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Leave Request Form</h6>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="id_leave_type" class="form-label">Leave Type</label>
+                            {{ form.leave_type }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="id_start_date" class="form-label">Start Date</label>
+                            {{ form.start_date }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_end_date" class="form-label">End Date</label>
+                            {{ form.end_date }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_reason" class="form-label">Reason for Leave</label>
+                        {{ form.reason }}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'employee_dashboard' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-2"></i> Submit Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Leave Request Guidelines</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h5 class="text-primary"><i class="fas fa-info-circle me-2"></i> Important Information</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Submit your leave request at least 3 days in advance.</li>
+                        <li class="list-group-item">For sick leave, please submit your request as soon as possible.</li>
+                        <li class="list-group-item">All leave requests are subject to manager approval.</li>
+                        <li class="list-group-item">You can check the status of your request on your dashboard.</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h5 class="text-primary"><i class="fas fa-question-circle me-2"></i> Leave Types</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Leave Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Sick Leave</td>
+                                    <td>For illness or medical appointments</td>
+                                </tr>
+                                <tr>
+                                    <td>Vacation</td>
+                                    <td>For planned time off</td>
+                                </tr>
+                                <tr>
+                                    <td>Personal</td>
+                                    <td>For personal matters</td>
+                                </tr>
+                                <tr>
+                                    <td>Other</td>
+                                    <td>For any other reason (please specify in the reason field)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add date validation
+    document.addEventListener('DOMContentLoaded', function() {
+        const startDateInput = document.getElementById('id_start_date');
+        const endDateInput = document.getElementById('id_end_date');
+        
+        // Set min date to today
+        const today = new Date().toISOString().split('T')[0];
+        startDateInput.setAttribute('min', today);
+        endDateInput.setAttribute('min', today);
+        
+        // Update end date min when start date changes
+        startDateInput.addEventListener('change', function() {
+            endDateInput.setAttribute('min', this.value);
+            if (endDateInput.value && new Date(endDateInput.value) < new Date(this.value)) {
+                endDateInput.value = this.value;
+            }
+        });
+    });
+</script>
+{% endblock %}
