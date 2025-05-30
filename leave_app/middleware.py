@@ -24,10 +24,24 @@ class ReadOnlyMiddleware:
             
         # For Vercel environment, handle write operations specially
         if 'VERCEL' in os.environ:
-            # For login, use session-based authentication instead of database
+            # Allow authentication-related requests to pass through
             if request.path == '/' and request.method == 'POST':
-                response = self.get_response(request)
-                return response
+                try:
+                    response = self.get_response(request)
+                    return response
+                except Exception as e:
+                    return HttpResponse(
+                        "<h1>Login Error</h1>"
+                        "<p>There was an error processing your login request.</p>"
+                        "<p>Please try using these demo credentials:</p>"
+                        "<ul>"
+                        "<li>Username: admin, Password: admin123</li>"
+                        "<li>Username: manager, Password: manager123</li>"
+                        "<li>Username: security, Password: security123</li>"
+                        "</ul>"
+                        "<p><a href='/'>Return to login</a></p>",
+                        content_type='text/html'
+                    )
                 
             # Allow register page to be displayed
             if request.path == '/register/' and request.method == 'POST':
