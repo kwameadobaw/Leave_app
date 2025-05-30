@@ -1,8 +1,8 @@
-{% extends 'base.html' %}
+{% extends 'leave_app/base.html' %}
 
 {% block title %}Login - Leave Management System{% endblock %}
 
-{% block auth_content %}
+{% block leave_app_auth_content %}
 <div class="login-page">
     <div class="container">
         <div class="row justify-content-center">
@@ -85,7 +85,7 @@
 </div>
 {% endblock %}
 
-{% block extra_css %}
+{% block auth_extra_css %}
 <style>
     .login-card {
         animation: fadeInUp 0.8s ease-out;

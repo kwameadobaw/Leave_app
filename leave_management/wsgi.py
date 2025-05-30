@@ -1,5 +1,4 @@
-"""
-WSGI config for leave_management project.
+"""WSGI config for leave_management project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,7 +10,11 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'leave_management.settings')
+# Check if running on Vercel
+if 'VERCEL' in os.environ:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'leave_management.settings_production')
+else:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'leave_management.settings')
 
 application = get_wsgi_application()
 
