@@ -25,7 +25,7 @@ class ReadOnlyMiddleware:
         # For Vercel environment, handle write operations specially
         if 'VERCEL' in os.environ:
             # Allow authentication-related requests to pass through
-            if request.path == '/' and request.method == 'POST':
+            if (request.path == '/' or request.path == '/login/') and request.method == 'POST':
                 try:
                     response = self.get_response(request)
                     return response
